@@ -1,0 +1,2 @@
+python-dotenv
+igdb-api-v4
