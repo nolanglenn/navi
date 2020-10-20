@@ -3,6 +3,8 @@ from dotenv import load_dotenv
 import json
 import requests
 import discord
+import datetime
+import emoji
 from discord.ext import commands
 from igdb.wrapper import IGDBWrapper
 
@@ -24,7 +26,7 @@ async def search(ctx, arg):
     # JSON API request
     byte_array = wrapper.api_request(
                 'games',
-                f'fields name,first_release_date,platforms.name,cover.url,summary;search "{arg}";limit 1;'
+                f'fields name,first_release_date,platforms.name,cover.url;search "{arg}";limit 1;'
                 )
 
     # Parse JSON
@@ -32,20 +34,49 @@ async def search(ctx, arg):
 
     # Loop through platforms and extract platform name
     platforms = []
-    for n in game_info[0]['platforms']:
-        name = n['name']
-        platforms.append(name)
+    try:
+        for n in game_info[0]['platforms']:
+            name = n['name']
+            platforms.append(name)
+    except Exception:
+        pass
 
-    # Parse and format release date
+    # Parse and format release date and determine if game is eligible (15 years old or oler)
+    release_date = datetime.datetime.fromtimestamp(
+                        int(game_info[0]['first_release_date'])
+                    ).strftime("%B %d, %Y")
     
+    def eligible():
+        if datetime.datetime.fromtimestamp(int(game_info[0]['first_release_date'])) <= datetime.datetime.now() - datetime.timedelta(days=15*365):
+            return emoji.emojize(':white_check_mark:')
+        else:
+            return emoji.emojize(':no_entry_sign:')
+
+    # Fetch thumbnail if it exists
+    def thumbnail():
+        cover = discord.Embed.Empty
+        try:
+            if game_info[0]['cover']:
+                cover = f"https:{game_info[0]['cover']['url']}"
+                return cover
+            else:
+                return discord.Embed.Empty
+        except Exception:
+            return cover
+        else:
+            return cover
+
+
 
     # Set up embeded message
     embed = discord.Embed(title=game_info[0]['name'], color=0x1f436e)
-    embed.set_image(url=f"https:{game_info[0]['cover']['url']}")
-    embed.add_field(name='Platforms', value=f"{' / '.join(platforms)}")
-    embed.add_field(name='Release Date', value=f"{}")
+    embed.set_thumbnail(url=thumbnail())
+    embed.add_field(name='Platform(s)', value=' / '.join(platforms))
+    embed.add_field(name='Release Date', value=release_date, inline=False)
+    embed.add_field(name='Eligible?', value=eligible())
     
     print(game_info[0])
+    print(thumbnail())
     await ctx.channel.send(embed=embed)
 
 client.run(os.environ.get('DISCORD_TOKEN'))
