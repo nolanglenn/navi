@@ -26,13 +26,26 @@ async def search(ctx, arg):
                 'games',
                 f'fields name,first_release_date,platforms.name,cover.url,summary;search "{arg}";limit 1;'
                 )
+
     # Parse JSON
     game_info = json.loads(byte_array)
+
+    # Loop through platforms and extract platform name
+    platforms = []
+    for n in game_info[0]['platforms']:
+        name = n['name']
+        platforms.append(name)
+
+    # Parse and format release date
+    
+
     # Set up embeded message
     embed = discord.Embed(title=game_info[0]['name'], color=0x1f436e)
     embed.set_image(url=f"https:{game_info[0]['cover']['url']}")
+    embed.add_field(name='Platforms', value=f"{' / '.join(platforms)}")
+    embed.add_field(name='Release Date', value=f"{}")
     
-    print(game_info[0]['name'])
+    print(game_info[0])
     await ctx.channel.send(embed=embed)
 
 client.run(os.environ.get('DISCORD_TOKEN'))
