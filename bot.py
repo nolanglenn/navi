@@ -17,7 +17,10 @@ async def on_ready():
     print('Bot is ready.')
 
 @client.command()
-async def search(ctx, arg):
+async def search(ctx, *, arg=None):
+    # Input validation
+    if arg == None:
+        return await ctx.channel.send('Please provide a game.')
     # Establish authentication through Twitch
     twitch = requests.post(f'https://id.twitch.tv/oauth2/token?client_id={os.environ.get("TWITCH_ID")}&client_secret={os.environ.get("TWITCH_SECRET")}&grant_type=client_credentials')
     oAuth = twitch.json()
@@ -26,7 +29,7 @@ async def search(ctx, arg):
     # JSON API request
     byte_array = wrapper.api_request(
                 'games',
-                f'fields name,first_release_date,platforms.name,cover.url;search "{arg}";limit 1;'
+                f'fields name,first_release_date,platforms.name,cover.url;search "{arg}";limit 5;'
                 )
 
     # Parse JSON
@@ -42,6 +45,7 @@ async def search(ctx, arg):
         pass
 
     # Parse and format release date and determine if game is eligible (15 years old or oler)
+
     release_date = datetime.datetime.fromtimestamp(
                         int(game_info[0]['first_release_date'])
                     ).strftime("%B %d, %Y")
