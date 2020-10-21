@@ -5,6 +5,8 @@ import requests
 import discord
 import datetime
 import emoji
+import sheets
+from sheets import searched_titles
 from discord.ext import commands
 from igdb.wrapper import IGDBWrapper
 
@@ -69,6 +71,17 @@ async def search(ctx, *, arg=None):
             return cover
         else:
             return cover
+    
+    # Search Retro Master List with Google Sheets API
+    def on_list():
+        try:
+            sheets.main()
+            if game_info[0]['name'] in searched_titles:
+                return 'Yes'
+            else:
+                return 'No'
+        except Exception:
+            pass
 
 
 
@@ -78,9 +91,9 @@ async def search(ctx, *, arg=None):
     embed.add_field(name='Platform(s)', value=' / '.join(platforms))
     embed.add_field(name='Release Date', value=release_date, inline=False)
     embed.add_field(name='Eligible?', value=eligible())
+    embed.add_field(name='On list?', value=on_list(), inline=True)
     
     print(game_info[0])
-    print(thumbnail())
     await ctx.channel.send(embed=embed)
 
 client.run(os.environ.get('DISCORD_TOKEN'))
