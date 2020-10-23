@@ -22,6 +22,10 @@ Will result in:
 
 The bot will also query the [Retro Master List](https://docs.google.com/spreadsheets/d/1NbroYVwlp2PLZHA_12nCgbKQ0_Dov7LqClDs4rtKPZ4/edit#gid=0) and tell the user if it is already on the list.
 
+## Technologies
+
+Python, AWS, Discord.py, Google Sheets API, IGDB
+
 ## Future Improvement(s)
 
 - Allow users to react to the embed to automatically add the game to the RML.
