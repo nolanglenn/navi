@@ -13,6 +13,7 @@ SAMPLE_SPREADSHEET_ID = '1NbroYVwlp2PLZHA_12nCgbKQ0_Dov7LqClDs4rtKPZ4'
 SAMPLE_RANGE_NAME = 'Sheet1!A3:E'
 
 searched_titles = []
+episode = []
 
 def main():
     """Shows basic usage of the Sheets API.
@@ -52,6 +53,7 @@ def main():
         for row in values:
             # Create a list of titles in RML that's accessible in bot.py
             searched_titles.append(row[0])
+            episode.append(row[3])
             # print('%s' % (row[0]))
         return searched_titles
 

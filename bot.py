@@ -7,6 +7,7 @@ import datetime
 import emoji
 import sheets
 from sheets import searched_titles
+from sheets import episode
 from discord.ext import commands
 from igdb.wrapper import IGDBWrapper
 
@@ -79,12 +80,11 @@ async def search(ctx, *, arg=None):
             if game_info[0]['name'] in searched_titles:
                 return 'Yes'
             else:
+                embed.set_footer(name ='Note:', value='You will be able to add this game by reating in future iterations of this bot.')
                 return 'No'
         except Exception:
             pass
-
-
-
+      
     # Set up embeded message
     embed = discord.Embed(title=game_info[0]['name'], color=0x1f436e)
     embed.set_thumbnail(url=thumbnail())
